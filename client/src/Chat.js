@@ -63,15 +63,17 @@ class Chat extends React.Component {
   }
 
   askBot() {
-    var allMsg = "";
+    /* var allMsg = "";
     for (const msg of this.state.cache) {
       allMsg += msg + " ";
-    }
-    this.addMessage({
+    } */
+    /* this.addMessage({
       id: Math.floor(Math.random()*1000000),
       userId: 2,
       content: allMsg
-    });
+    }); */
+    this.printMessages(this.state.cache);
+    console.log("test");
 
     // flush cache
     this.setState({cache: [], flushed: true});
@@ -105,6 +107,22 @@ class Chat extends React.Component {
         content: msg
       });
     }) */
+  }
+
+  printMessages(messages) {
+    if (messages.length <= 0) {
+      return;
+    }
+
+    this.addMessage({
+      id: Math.floor(Math.random()*1000000),
+      userId: 2,
+      content: messages.shift()
+    });
+
+    setTimeout(() => {
+      this.printMessages(messages);
+    }, 100);
   }
 
   componentDidMount() {
