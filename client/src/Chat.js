@@ -48,7 +48,7 @@ class Chat extends React.Component {
       this.setState({flushed: false});
       setTimeout(() => {
         this.askBot();
-      }, 6000);
+      }, 8000);
     }
     // Clear the input box
     this.setState({ chatInput: '' });
@@ -72,8 +72,34 @@ class Chat extends React.Component {
       userId: 2,
       content: allMsg
     }); */
-    this.printMessages(this.state.cache);
-    console.log("test");
+
+    // console.log(this.state.cache)
+    fetch("http://localhost:5000/ask-bot", {
+      method: "POST",
+      // mode: 'no-cors',
+      headers: {
+        "accepts":"application/json",
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(this.state.cache)
+    })
+      .then(res => {
+      if (res.status != 200) {
+        console.log(res.status);
+        return;
+      }
+
+      return res.json();
+    })
+      .then(data => {
+      this.printMessages(data);
+    })
+      .catch(err=>{
+      console.log(err)
+    })
+
+    //this.printMessages(this.state.cache);
+    // console.log("test");
 
     // flush cache
     this.setState({cache: [], flushed: true});
@@ -122,7 +148,7 @@ class Chat extends React.Component {
 
     setTimeout(() => {
       this.printMessages(messages);
-    }, 100);
+    }, 200);
   }
 
   componentDidMount() {
