@@ -11,6 +11,7 @@
 import './Chat.css';
 import React from 'react';
 
+var timeout = 5000;
 
 class Chat extends React.Component {
   constructor(props) {
@@ -20,7 +21,8 @@ class Chat extends React.Component {
       messages: [],
       chatInput: '',
       cache: [],
-      flushed: true
+      flushed: true,
+      lastEdit: Date.now()
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -31,7 +33,7 @@ class Chat extends React.Component {
   }
 
   handleChange(event) {
-    this.setState({chatInput: event.target.value});
+    this.setState({chatInput: event.target.value, lastEdit: Date.now()});
   }
 
   handleSubmit(event) {
@@ -48,7 +50,7 @@ class Chat extends React.Component {
       this.setState({flushed: false});
       setTimeout(() => {
         this.askBot();
-      }, 8000);
+      }, timeout);
     }
     // Clear the input box
     this.setState({ chatInput: '' });
@@ -63,15 +65,14 @@ class Chat extends React.Component {
   }
 
   askBot() {
-    /* var allMsg = "";
-    for (const msg of this.state.cache) {
-      allMsg += msg + " ";
-    } */
-    /* this.addMessage({
-      id: Math.floor(Math.random()*1000000),
-      userId: 2,
-      content: allMsg
-    }); */
+    // check to see if typed recently
+    var time = Date.now() - this.state.lastEdit;
+    if (time < timeout) {
+      setTimeout(() => {
+        this.askBot();
+      }, timeout - time);
+      return;
+    }
 
     // console.log(this.state.cache)
     fetch("http://localhost:5000/ask-bot", {
@@ -88,7 +89,6 @@ class Chat extends React.Component {
         console.log(res.status);
         return;
       }
-
       return res.json();
     })
       .then(data => {
@@ -103,36 +103,6 @@ class Chat extends React.Component {
 
     // flush cache
     this.setState({cache: [], flushed: true});
-    /* setTimeout(() => {
-      this.addMessage({
-        id: Math.floor(Math.random()*1000000),
-        userId: 2,
-        content: "Hello World!"
-      });
-    }, 1000);*/
-    /* fetch("https://api.api.ai/v1/query?v=20170828", {
-      method: "POST",
-      headers: {
-        "Authorization": "Bearer 546cfca2e8d14b48ace60e1d273fc40a",
-        "Content-Type": "application/json;charset=UTF-8"
-      },
-      body: JSON.stringify({
-        query: question,
-        "lang": "en",
-        "sessionId": this.props.sessionId
-      })
-    })
-      .then(res => {
-      return res.json()
-    })
-      .then(data => {
-      const msg = data.result.fulfillment.speech || "eh?" // say something if the response is empty
-      that.addMessage({
-        id: Math.floor(Math.random()*1000000),
-        userId: 2,
-        content: msg
-      });
-    }) */
   }
 
   printMessages(messages) {
