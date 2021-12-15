@@ -75,7 +75,7 @@ class Chat extends React.Component {
     }
 
     // console.log(this.state.cache)
-    fetch("http://localhost:5000/ask-bot", {
+    fetch("/ask-bot", {
       method: "POST",
       // mode: 'no-cors',
       headers: {

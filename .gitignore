@@ -1,5 +1,6 @@
 *.csv
 /model
 __pycache__/
+*.pem
 venv/
 .ipynb_checkpoints
