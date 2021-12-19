@@ -18,7 +18,9 @@ Would be formatted as:
 | Hello <\|brk\|> How are you? | I'm doing fine. |
 
 ### Model
-To train the model, I used a special version of GPT-2, Dialo-GPT, which is trained for dialogue, and its respecitve tokenizer. To tokenize the text, three special tokens, `<|startoftext|>`, `<|endoftext|>`, and `<|answer|>` were added. Together, a row of data looking like 
+To train the model, I used a special version of GPT-2, Dialo-GPT, which is trained for dialogue, and its respecitve tokenizer. The code for this can be found in `notebooks/GPT_2_train.ipynb`.
+
+To tokenize the text, three special tokens, `<|startoftext|>`, `<|endoftext|>`, and `<|answer|>` were added. Together, a row of data looking like 
 | questions      | answers |
 | ----------- | ----------- |
 | Hello <\|brk\|> How are you? | I'm doing fine. |
@@ -32,11 +34,38 @@ Before being passed into the tokenizer. After tokenization, labels of any tokens
 It should also be noted that typically, we would want to also mask the attention of any tokens after the `<|answer|>` token, so that the model wouldn't "look ahead" at the answer during training time. However, I found better results by forgoing this. This made the end result more pattern-matchy, but it seemed to generate more cohesive responses which was good enough for the purposes of this project.
 
 ### Web Application
-The frontend of this project was created with React, and the design intended to mimic the appearance of iMessages. To support multiple messages at once, the app would cache all incoming messages and then flush the cache after 5 seconds of no typing. Then, the backend model would be queried to generate and display a response.
+The frontend of this project was created with React, and the design intended to mimic the appearance of iMessages. To support multiple messages at once, the app would cache all incoming messages and then flush the cache after 5 seconds of no typing. Then, the backend model would be queried to generate and display a response. The code for the frontend can be found in `client/`.
 
-The backend of this project was a simple flask app with two endpoints. One endpoint served the static built frontend React app, and the other queried the saved model. Honestly, a backend for this project wouldn't even be needed despite the fact that pytorch was required to run the model.
+The backend of this project was a simple flask app with two endpoints. One endpoint served the static built frontend React app, and the other queried the saved model. Honestly, a backend for this project wouldn't even be needed despite the fact that pytorch was required to run the model. The code for the backend can be found in `server/`.
 
 The app was intended to be deployed on AWS. However, AWS EC2 free servers have too little RAM to store the large GPT-2 model. This resulted in incredibly slow query time. Seeing as this is an app intended for just one person (my girlfriend), I decided to just host the app locally while I search for an inexpensive way to deploy the large model.
 
 ### Results
 Some example conversations from the webapp are displayed here: (TBD)
+
+## Running the App and Making Changes
+
+### Data
+Because the data and model for this app is kept private, you will have to generate your own training data and model. To gather data, you will need a Mac and iMessage data (or you can get data from other sources). Collect the data in `notebooks/messages.ipynb`. You will also have to change the iMessage database path and handle ID to the path to your local iMessage database and the handle ID of the person who's texts to emulate respectively. You may also have to add a filter for chat ID if you were part of any group chats with the person in question.
+
+Next, format the data in `notebooks/data_formatting.ipynb`. This notebook should be able to be run without any changes.
+
+### Model
+The model was trained in `notebooks/GPT_2_train.ipynb`. This notebook was run in Google Colab, so you may have to change some things around if not running the model in Google Colab. Other than that, parameters of the model or the GPT-2 corpus itself can be changed to your liking. Once the model is trained and saved, create a new directory `model/` in the project root, then move all saved model files to that directory.
+
+### Frontend
+Make sure npm is installed on your device. Once that's installed, navigate to `client/` and run `npm install` to install all the node dependencies. Run `npm start` to view the frontend webapp (it may not be fully functional without the backend). When changes are made, run `npm run build` to build the static app so the backend can serve it. More detailed instructions can be found in `client/README.md`.
+
+### Backend
+Make sure python3, pip3, and virtualenv are installed on your device. To start your virtual environment, navigate to `server/` and run the following commands:
+1. `virtualenv venv`
+2. `source venv/bin/activate`
+3. `pip3 install -r requirements.txt`
+
+Then, run the app with `flask run`. You can make changes in `app.py`. If any changes are made on the frontend, make sure you rebuild the frontend and re-run `flask run`. Finally, if any dependencies are changed, run `pip3 freeze > requirements.txt` before pushing new commits.
+
+## Credits
+iMessage data collection: https://towardsdatascience.com/heres-how-you-can-access-your-entire-imessage-history-on-your-mac-f8878276c6e9 \
+Tokenization for dialogue: https://discuss.huggingface.co/t/gpt2-for-qa-pair-generation/759/7 \
+Training GPT-2 in pytorch: https://reyfarhan.com/posts/easy-gpt2-finetuning-huggingface/ \
+React iMessage webapp: https://codepen.io/josefrichter/pen/OjBEMN
