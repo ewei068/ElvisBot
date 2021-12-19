@@ -40,8 +40,20 @@ The backend of this project was a simple flask app with two endpoints. One endpo
 
 The app was intended to be deployed on AWS. However, AWS EC2 free servers have too little RAM to store the large GPT-2 model. This resulted in incredibly slow query time. Seeing as this is an app intended for just one person (my girlfriend), I decided to just host the app locally while I search for an inexpensive way to deploy the large model.
 
-### Results
-Some example conversations from the webapp are displayed here: (TBD)
+## Results
+Some example conversations from the webapp are displayed here (the grey is the bot, the blue is me communicating with the bot):
+
+**Conversation 1**
+![alt text](https://github.com/ewei068/ElvisBot/blob/256f0cd583c069f486343b8adf49c9879072b1ce/example-conv1.jpg?raw=true)
+This was a fairly standard conversation that I had with the bot. The bot is able to properly mimic my speech patterns and respond appropriately to my prompts. It even remembers that I like Minecraft.
+
+**Conversation 2**
+![alt text](https://github.com/ewei068/ElvisBot/blob/256f0cd583c069f486343b8adf49c9879072b1ce/example-conv2.jpg?raw=true)
+Here we can see the bot having a standard conversation that mimics something that my girlfriend and I might have talked about. We now see one of the weaknesses of the bot: it seems to copy my exact response to a prompt rather than generate a new answer. This is likely due to my forgoing of the attention mask during training. Again, this works fine for generating realistic conversation, but it doesn't seem to synthesize much new dialogue.
+
+**Conversation 3**
+![alt text](https://github.com/ewei068/ElvisBot/blob/256f0cd583c069f486343b8adf49c9879072b1ce/example-conv3.jpg?raw=true)
+In this conversation, we see the bot challenged with fairly new prompts not seen in the training data (my girlfriend never shamed me for playing League, unfortunately). The bot is able to reply with somewhat coherent answers, which actually pleasantly surprised me.
 
 ## Running the App and Making Changes
 
