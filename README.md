@@ -29,9 +29,7 @@ Would be changed to
 
 `<startoftext|>Hello <|brk|> How are you? <|answer|> I'm doing fine.<|endoftext|>`
 
-Before being passed into the tokenizer. After tokenization, labels of any tokens prior to and including the `<|answer|>` were set to -100 so cross-entropy loss would ignore those labels. This is because the model is only trying to generate tokens after the `<|answer|>` token, so the loss function shouldn't be computed on any tokens prior to that. 
-
-It should also be noted that typically, we would want to also mask the attention of any tokens after the `<|answer|>` token, so that the model wouldn't "look ahead" at the answer during training time. However, I found better results by forgoing this. This made the end result more pattern-matchy, but it seemed to generate more cohesive responses which was good enough for the purposes of this project.
+Before being passed into the tokenizer. After tokenization, labels of any tokens prior to and including the `<|answer|>` token were set to -100 so cross-entropy loss would ignore those labels. This is because the model is only trying to generate tokens after the `<|answer|>` token, so the loss function shouldn't be computed on any tokens prior to that. Additionally, the attention masks of any tokens after the <|answer|>` were be set to 0 so the model doesn't "look ahead" during training time to see what to generate.
 
 ### Web Application
 The frontend of this project was created with React, and the design intended to mimic the appearance of iMessages. To support multiple messages at once, the app would cache all incoming messages and then flush the cache after 5 seconds of no typing. Then, the backend model would be queried to generate and display a response. The code for the frontend can be found in `client/`.
